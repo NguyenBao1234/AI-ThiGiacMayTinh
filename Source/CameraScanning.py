@@ -48,4 +48,7 @@ class ScanningApp(App):
             image_texture.blit_buffer(buf, colorfmt='bgr', bufferfmt='ubyte')
             self.image.texture = image_texture
 
+    def on_stop(self):
+        self.camera.release()
+
 ScanningApp().run()
