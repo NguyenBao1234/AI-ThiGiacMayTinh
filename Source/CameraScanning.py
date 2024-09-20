@@ -15,7 +15,7 @@ class ScanningApp(App):
         self.camera = cv2.VideoCapture(0)
 
         CaptureButton = Button(size_hint=(0.1, 0.1),
-                               on_press=self.CapturePressButton,
+                               on_press=self.OnPressCaptureButton,
                                background_normal='../Asset/CaptureNormalButton.png',
                                background_down ='../Asset/CapturePressButton.png',
                                border = (3, 3, 3, 3),
@@ -39,7 +39,7 @@ class ScanningApp(App):
         HUD.add_widget(CaptureButton)
         return HUD
     #event chup anh
-    def CapturePressButton(self,instance):
+    def OnPressCaptureButton(self, instance):
         print("CapturePressButton")
 
     def update(self, dt):
