@@ -1,3 +1,5 @@
+from functools import partial
+
 import cv2
 from kivy.app import App
 from kivy.uix.button import Button
@@ -9,7 +11,7 @@ from kivy.uix.floatlayout import FloatLayout
 
 class ScanningApp(App):
     def build(self):
-        HUD = FloatLayout()
+        self.HUD = FloatLayout()
         self.title = 'Camera Scanning'
         self.image = Image(allow_stretch=True,keep_ratio=False)
         self.camera = cv2.VideoCapture(0)
@@ -20,6 +22,9 @@ class ScanningApp(App):
                                background_down ='../Asset/CapturePressButton.png',
                                border = (3, 3, 3, 3),
                                pos_hint={'center_x': 0.5, 'y': 0})
+
+        ''' button data for each dêtcted object '''
+        self.object_buttons = {}
 
         """SetUpModel"""
         self.classNames = []
@@ -35,26 +40,46 @@ class ScanningApp(App):
         self.net.setInputSwapRB(True)
 
         Clock.schedule_interval(self.update, 1.0 / 30.0)
-        HUD.add_widget(self.image)
-        HUD.add_widget(CaptureButton)
-        return HUD
+
+        self.HUD.add_widget(self.image)
+        self.HUD.add_widget(CaptureButton)
+        return self.HUD
     #event chup anh
     def OnPressCaptureButton(self, instance):
         print("CapturePressButton")
+    def OnPressInforBtn(self, instance, ObjectName):
+        print("infor", {ObjectName})
 
+    """update realtime"""
     def update(self, dt):
         ret, frame = self.camera.read()
 
         if ret:
+            current_objects = []
             classIds, confs, bbox = self.net.detect(frame, confThreshold=0.5)
 
             if len(classIds) != 0:
                 for classId, confidence, box in zip(classIds.flatten(), confs.flatten(), bbox):
+                    current_objects.append(tuple(box))
                     cv2.rectangle(frame, box, (0, 155, 255), 2)
                     cv2.putText(frame, self.classNames[classId - 1].upper(), (box[0] + 10, box[1] + 20),
                                 cv2.FONT_HERSHEY_PLAIN, 1, (0, 0, 255), thickness=2)
                     cv2.putText(frame, str(round(confidence * 100, 2)) + '%', (box[0] + 10, box[1] + 40),
                                 cv2.FONT_HERSHEY_PLAIN, 1, (0, 0, 255), thickness=2)
+                    """Assign all infor buttons to the dectected object """
+                    if tuple(box) not in self.object_buttons:
+                        InforBtn = Button(text=self.classNames[classId - 1].upper(), size_hint=(None, None),
+                                          size=(100, 50), pos=(int(box[0]), int(frame.shape[0] - box[1] - 50)) )
+                        InforBtn.bind(on_press = partial (self.OnPressInforBtn, ObjectName = self.classNames[classId - 1]) )
+                        self.object_buttons[tuple(box)] = InforBtn
+                        self.HUD.add_widget(InforBtn)
+                    else :
+                        self.object_buttons[tuple(box)].pos = (int(box[0]), int(frame.shape[0] - box[1] - 50))
+            """remove the undetected object's info button"""
+            for old_box in list(self.object_buttons.keys()):
+                if old_box not in current_objects:
+                    self.HUD.remove_widget(self.object_buttons[old_box])
+                    del self.object_buttons[old_box]
             buf = cv2.flip(frame,0).tostring()
             image_texture = Texture.create(size=(frame.shape[1], frame.shape[0]), colorfmt='bgr')
             image_texture.blit_buffer(buf, colorfmt='bgr', bufferfmt='ubyte')
