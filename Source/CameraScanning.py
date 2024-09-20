@@ -13,12 +13,12 @@ class ScanningApp(App):
         self.camera = cv2.VideoCapture(0)
 
         self.classNames = []
-        self.classFile = '../Object_Detection_Files/coco.names'
+        self.classFile = '../ModelObjectDetection/coco.names'
         with open(self.classFile, 'rt') as f:
             self.classNames = f.read().rstrip('\n').split('\n')
 
-        self.configPath = '../Object_Detection_Files/ssd_mobilenet_v3_large_coco_2020_01_14.pbtxt'
-        self.weightsPath = '../Object_Detection_Files/frozen_inference_graph.pb'
+        self.configPath = '../ModelObjectDetection/ssd_mobilenet_v3_large_coco_2020_01_14.pbtxt'
+        self.weightsPath = '../ModelObjectDetection/frozen_inference_graph.pb'
 
         self.net = cv2.dnn.DetectionModel(self.weightsPath, self.configPath)
         self.net.setInputSize(320, 320)
