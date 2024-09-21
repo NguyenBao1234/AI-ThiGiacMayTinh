@@ -7,8 +7,10 @@ from kivy.app import App
 class MyApp(App):
     def build(self):
         sm = ScreenManager()
-        sm.add_widget(CameraHUD())
-        sm.add_widget(AlbumHUD())
+        self.CameraPage = CameraHUD()
+        self.AlbumPage = AlbumHUD()
+        sm.add_widget(self.CameraPage)
+        sm.add_widget(self.AlbumPage)
         return sm
 
 MyApp().run()

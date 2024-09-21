@@ -1,8 +1,9 @@
 import time
 from functools import partial
+from typing import List
 
 import cv2
-import os
+from FuncrionLibrary import *
 from kivy.uix.button import Button
 from kivy.uix.image import Image
 from kivy.clock import Clock
@@ -12,33 +13,31 @@ from kivy.uix.screenmanager import Screen
 
 
 class CameraHUD(Screen):
+
     def __init__(self, **kwargs):
         super(CameraHUD, self).__init__(**kwargs)
+
         self.name = 'CameraHUD'
-
-        # Tạo layout cho HUD
         self.HUDLayout = FloatLayout()
-
-        # Tạo widget Image để hiện thị hình ảnh
+        # for camera's screen
         self.image = Image(allow_stretch=True, keep_ratio=True)
 
         self.camera = cv2.VideoCapture(0)
 
-        # Tạo widget Button
         CaptureButton = Button(size_hint=(0.1, 0.1),
-                               on_press=self.OnPressCaptureButton,
-                               background_normal='../Asset/CaptureNormalButton.png',
-                               background_down='../Asset/CapturePressButton.png',
-                               border=(3, 3, 3, 3),
-                               pos_hint={'center_x': 0.5, 'center_y': 0.1})
+                            on_press=self.OnPressCaptureButton,
+                            background_normal='../Asset/CaptureNormalButton.png',
+                            background_down='../Asset/CapturePressButton.png',
+                            border=(3, 3, 3, 3),
+                            pos_hint={'center_x': 0.5, 'center_y': 0.1})
 
         # Tạo Button chuyển đổi giữa camera và thư viện
-        latestImgPath = self.LatestImagePath()
-        AblumButton = Button(size_hint=(0.1, 0.1),
-                             on_press=self.OpenAlbum,
-                             background_normal=latestImgPath,
-                             border=(3, 3, 3, 3),
-                             pos_hint={'center_x': 0.1, 'center_y': 0.1})
+        latestImgPath = GetImageAt(0)
+        self.AlbumBtn =  Button(size_hint=(0.1, 0.1),
+                           on_press=self.OpenAlbum,
+                           background_normal=latestImgPath,
+                           border=(3, 3, 3, 3),
+                           pos_hint={'center_x': 0.1, 'center_y': 0.1})
 
         # Cài đạt hệ thống nhận diện
         self.classNames = []
@@ -52,31 +51,30 @@ class CameraHUD(Screen):
         self.net.setInputScale(1.0 / 127.5)
         self.net.setInputMean((127.5, 127.5, 127.5))
         self.net.setInputSwapRB(True)
-
+        # TMap : key = <tuple(box)>; value = <button>
         self.object_buttons = {}
 
-        # Cập nhật mỗi 1/30 giây
         Clock.schedule_interval(self.update, 1 / 30)
 
         # Thêm các widget vào layout và HUD
         self.HUDLayout.add_widget(self.image)
         self.HUDLayout.add_widget(CaptureButton)
-        self.HUDLayout.add_widget(AblumButton)
+        self.HUDLayout.add_widget(self.AlbumBtn)
         self.add_widget(self.HUDLayout)
 
     def update(self, dt):
         ret, frame = self.camera.read()
         if ret:
-            current_objects = []
 
-            # self.Detect(frame)
+            current_objects = []
+            # self.Dectec(frame)
             classIds, confs, bbox = self.net.detect(frame, confThreshold=0.5)
 
             if len(classIds) != 0:
                 for classId, confidence, box in zip(classIds.flatten(), confs.flatten(), bbox):
                     current_objects.append(tuple(box))
                     self.DrawBoundingBoxes(frame, classId, confidence, box)
-                    """check to Add button into TMap"""
+                    '''check to assign <infor button> to < the detected object>'''
                     if tuple(box) not in self.object_buttons:
                         InforBtn = Button(text=self.classNames[classId - 1].upper(), size_hint=(None, None),
                                           size=(100, 50), pos=(int(box[0]), int(frame.shape[0] - box[1] - 50)))
@@ -98,19 +96,16 @@ class CameraHUD(Screen):
             self.image.texture = image_texture
 
     def OnPressCaptureButton(self, instance):
-
         print("CapturePressButton")
         ret, frame = self.camera.read()
 
         if ret:
             timestr = time.strftime("%Y%m%d-%H%M%S")
 
-            for classID, confidence, box in zip(*self.Detect(frame)):
-                self.DrawBoundingBoxes(frame, classID, confidence, box)
+            #for classID, confidence, box in zip(*self.Dectect(frame)):
+             #   self.DrawBoundingBoxes(frame, classID, confidence, box)
             cv2.imwrite('../ImageCaptured/IMG-{}.jpg'.format(timestr), frame)
-
-    def OpenAlbum(self, instance):
-        self.manager.current = 'AlbumHUD'
+            self.AlbumBtn.background_normal = GetImageAt(0)
 
     def OnPressInforBtn(self, instance, ObjectName):
         print("infor", {ObjectName})
@@ -122,23 +117,14 @@ class CameraHUD(Screen):
         cv2.putText(frame, str(round(confidence * 100, 2)) + '%', (box[0] + 10, box[1] + 40),
                     cv2.FONT_HERSHEY_PLAIN, 1, (0, 0, 255), thickness=2)
 
-    def Detect(self, frame):
+    def Dectect(self, frame):
         classIds, confs, bbox = self.net.detect(frame, confThreshold=0.5)
         return classIds, confs, bbox
 
-    def LatestImagePath(self):
-        imgPathArr = []
-
-        imgFile = '../ImageCaptured'
-        for filename in os.listdir(imgFile):
-            if filename.endswith('.jpg'):
-                imgPath = os.path.join(imgFile, filename)
-                imgPathArr.append(imgPath)
-        if len(imgPathArr) != 0:
-            return imgPathArr[-1]
-        else:
-            return '../ImageCaptured/whitePic.png'
 
 
+    def OpenAlbum(self, instance):
+        self.manager.current = 'AlbumHUD'
+        self.camera.release()
     def on_stop(self):
         self.camera.release()
