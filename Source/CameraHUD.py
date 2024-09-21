@@ -77,12 +77,13 @@ class CameraHUD(Screen):
                 for classId, confidence, box in zip(classIds.flatten(), confs.flatten(), bbox):
                     current_objects.append(tuple(box))
                     self.DrawBoundingBoxes(frame, classId, confidence, box)
-
+                    """check to Add button into TMap"""
                     if tuple(box) not in self.object_buttons:
                         InforBtn = Button(text=self.classNames[classId - 1].upper(), size_hint=(None, None),
                                           size=(100, 50), pos=(int(box[0]), int(frame.shape[0] - box[1] - 50)))
                         InforBtn.bind(on_press=partial(self.OnPressInforBtn, ObjectName=self.classNames[classId - 1]))
                         self.object_buttons[tuple(box)] = InforBtn
+                        self.HUDLayout.add_widget(InforBtn)
                     else:
                         self.object_buttons[tuple(box)].pos = (int(box[0]), int(frame.shape[0] - box[1] - 50))
 
