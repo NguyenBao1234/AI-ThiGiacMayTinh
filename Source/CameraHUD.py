@@ -1,6 +1,5 @@
 import time
 from functools import partial
-from typing import List
 
 import cv2
 import os
@@ -27,16 +26,16 @@ class CameraHUD(Screen):
 
         # Tạo widget Button
         CaptureButton = Button(size_hint=(0.1, 0.1),
-                            on_press=self.OnPressCaptureButton,
-                            background_normal='../Asset/CaptureNormalButton.png',
-                            background_down='../Asset/CapturePressButton.png',
-                            border=(3, 3, 3, 3),
-                            pos_hint={'center_x': 0.5, 'center_y': 0.1})
+                               on_press=self.OnPressCaptureButton,
+                               background_normal='../Asset/CaptureNormalButton.png',
+                               background_down='../Asset/CapturePressButton.png',
+                               border=(3, 3, 3, 3),
+                               pos_hint={'center_x': 0.5, 'center_y': 0.1})
 
         # Tạo Button chuyển đổi giữa camera và thư viện
         latestImgPath = self.LatestImagePath()
-        DictButton =  Button(size_hint=(0.1, 0.1),
-                             on_press=self.SwapToImgDict,
+        AblumButton = Button(size_hint=(0.1, 0.1),
+                             on_press=self.OpenAlbum,
                              background_normal=latestImgPath,
                              border=(3, 3, 3, 3),
                              pos_hint={'center_x': 0.1, 'center_y': 0.1})
@@ -62,7 +61,7 @@ class CameraHUD(Screen):
         # Thêm các widget vào layout và HUD
         self.HUDLayout.add_widget(self.image)
         self.HUDLayout.add_widget(CaptureButton)
-        self.HUDLayout.add_widget(DictButton)
+        self.HUDLayout.add_widget(AblumButton)
         self.add_widget(self.HUDLayout)
 
     def update(self, dt):
@@ -70,7 +69,7 @@ class CameraHUD(Screen):
         if ret:
             current_objects = []
 
-            # self.Dectec(frame)
+            # self.Detect(frame)
             classIds, confs, bbox = self.net.detect(frame, confThreshold=0.5)
 
             if len(classIds) != 0:
@@ -99,18 +98,19 @@ class CameraHUD(Screen):
             self.image.texture = image_texture
 
     def OnPressCaptureButton(self, instance):
+
         print("CapturePressButton")
         ret, frame = self.camera.read()
 
         if ret:
             timestr = time.strftime("%Y%m%d-%H%M%S")
 
-            for classID, confidence, box in zip(*self.Dectect(frame)):
+            for classID, confidence, box in zip(*self.Detect(frame)):
                 self.DrawBoundingBoxes(frame, classID, confidence, box)
             cv2.imwrite('../ImageCaptured/IMG-{}.jpg'.format(timestr), frame)
 
-    def SwapToImgDict(self, instance):
-        self.manager.current = 'LibraryHUD'
+    def OpenAlbum(self, instance):
+        self.manager.current = 'AlbumHUD'
 
     def OnPressInforBtn(self, instance, ObjectName):
         print("infor", {ObjectName})
@@ -122,12 +122,13 @@ class CameraHUD(Screen):
         cv2.putText(frame, str(round(confidence * 100, 2)) + '%', (box[0] + 10, box[1] + 40),
                     cv2.FONT_HERSHEY_PLAIN, 1, (0, 0, 255), thickness=2)
 
-    def Dectect(self, frame):
+    def Detect(self, frame):
         classIds, confs, bbox = self.net.detect(frame, confThreshold=0.5)
         return classIds, confs, bbox
 
     def LatestImagePath(self):
         imgPathArr = []
+
         imgFile = '../ImageCaptured'
         for filename in os.listdir(imgFile):
             if filename.endswith('.jpg'):
@@ -137,6 +138,7 @@ class CameraHUD(Screen):
             return imgPathArr[-1]
         else:
             return '../ImageCaptured/whitePic.png'
+
 
     def on_stop(self):
         self.camera.release()
