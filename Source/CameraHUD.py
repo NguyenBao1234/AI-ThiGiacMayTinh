@@ -83,7 +83,6 @@ class CameraHUD(Screen):
                                           size=(100, 50), pos=(int(box[0]), int(frame.shape[0] - box[1] - 50)))
                         InforBtn.bind(on_press=partial(self.OnPressInforBtn, ObjectName=self.classNames[classId - 1]))
                         self.object_buttons[tuple(box)] = InforBtn
-                        self.HUDLayout.add_widget(self.CaptureButton)
                     else:
                         self.object_buttons[tuple(box)].pos = (int(box[0]), int(frame.shape[0] - box[1] - 50))
 
@@ -110,7 +109,7 @@ class CameraHUD(Screen):
             cv2.imwrite('../ImageCaptured/IMG-{}.jpg'.format(timestr), frame)
 
     def SwapToImgDict(self, instance):
-        self.manager.current = 'DictHUD'
+        self.manager.current = 'LibraryHUD'
 
     def OnPressInforBtn(self, instance, ObjectName):
         print("infor", {ObjectName})
