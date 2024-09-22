@@ -1,6 +1,5 @@
 import time
 from functools import partial
-from typing import List
 
 import cv2
 from FuncrionLibrary import *
@@ -78,7 +77,7 @@ class CameraHUD(Screen):
                     if tuple(box) not in self.object_buttons:
                         InforBtn = Button(text=self.classNames[classId - 1].upper(), size_hint=(None, None),
                                           size=(100, 50), pos=(int(box[0]), int(frame.shape[0] - box[1] - 50)))
-                        InforBtn.bind(on_press=partial(self.OnPressInforBtn, ObjectName=self.classNames[classId - 1]))
+                        InforBtn.bind(on_press=partial(PlayInforObject, ObjectName=self.classNames[classId - 1]))
                         self.object_buttons[tuple(box)] = InforBtn
                         self.HUDLayout.add_widget(InforBtn)
                     else:
@@ -107,20 +106,12 @@ class CameraHUD(Screen):
             cv2.imwrite('../ImageCaptured/IMG-{}.jpg'.format(timestr), frame)
             self.AlbumBtn.background_normal = GetImageAt(0)
 
-    def OnPressInforBtn(self, instance, ObjectName):
-        print("infor", {ObjectName})
+
 
     def DrawBoundingBoxes(self, frame, classId, confidence, box):
         cv2.rectangle(frame, box, (0, 155, 255), 2)
-        cv2.putText(frame, self.classNames[classId - 1].upper(), (box[0] + 10, box[1] + 20),
-                    cv2.FONT_HERSHEY_PLAIN, 1, (0, 0, 255), thickness=2)
         cv2.putText(frame, str(round(confidence * 100, 2)) + '%', (box[0] + 10, box[1] + 40),
-                    cv2.FONT_HERSHEY_PLAIN, 1, (0, 0, 255), thickness=2)
-
-    def Dectect(self, frame):
-        classIds, confs, bbox = self.net.detect(frame, confThreshold=0.5)
-        return classIds, confs, bbox
-
+                    cv2.FONT_HERSHEY_DUPLEX, 1, (255, 255, 255), thickness=2)
 
 
     def OpenAlbum(self, instance):

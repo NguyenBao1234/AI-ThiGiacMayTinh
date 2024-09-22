@@ -22,3 +22,10 @@ def GetImageAt(index):
     if a > 0:
         if index < a :
             return GetImageArr()[a-1-index]
+
+def Dectect(self, frame):
+    classIds, confs, bbox = self.net.detect(frame, confThreshold=0.5)
+    return classIds, confs, bbox
+
+def PlayInforObject(self, ObjectName):
+    print("infor", {ObjectName})
