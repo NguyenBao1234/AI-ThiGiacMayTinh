@@ -22,7 +22,7 @@ class CameraHUD(Screen):
         # for camera's screen
         self.image = Image(allow_stretch=True, keep_ratio=True)
 
-        self.camera = cv2.VideoCapture(0)
+        self.CameraCaptureSource = cv2.VideoCapture(0)
 
         CaptureButton = Button(size_hint=(0.1, 0.1),
                             on_press=self.OnPressCaptureButton,
@@ -63,7 +63,7 @@ class CameraHUD(Screen):
         self.add_widget(self.HUDLayout)
 
     def update(self, dt):
-        ret, frame = self.camera.read()
+        ret, frame = self.CameraCaptureSource.read()
         if ret:
 
             current_objects = []
@@ -97,7 +97,7 @@ class CameraHUD(Screen):
 
     def OnPressCaptureButton(self, instance):
         print("CapturePressButton")
-        ret, frame = self.camera.read()
+        ret, frame = self.CameraCaptureSource.read()
 
         if ret:
             timestr = time.strftime("%Y%m%d-%H%M%S")
@@ -126,6 +126,11 @@ class CameraHUD(Screen):
     def OpenAlbum(self, instance):
         self.manager.transition.direction = 'left'
         self.manager.current = 'AlbumHUD'
-        self.camera.release()
+        self.CameraCaptureSource.release()
+
+    def on_enter(self):
+        if self.CameraCaptureSource is not None:
+            self.CameraCaptureSource = cv2.VideoCapture(0)
+            print("enter CameraCaptureSource")
     def on_stop(self):
-        self.camera.release()
+        self.CameraCaptureSource.release()
