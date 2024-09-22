@@ -124,6 +124,7 @@ class CameraHUD(Screen):
 
 
     def OpenAlbum(self, instance):
+        self.manager.transition.direction = 'left'
         self.manager.current = 'AlbumHUD'
         self.camera.release()
     def on_stop(self):

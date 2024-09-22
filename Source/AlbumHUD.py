@@ -21,25 +21,27 @@ class AlbumHUD(Screen):
 
     def on_touch_move(self, touch):
         if (touch.x - touch.ox) > 50:
-            self.bLeftSwipe = True
-        elif (touch.x - touch.ox) < 50:
             self.bRightSwipe = True
+        elif (touch.x - touch.ox) < 50:
+            self.bLeftSwipe = True
 
     def on_touch_up(self, touch):
-        if self.bLeftSwipe:
+        if self.bRightSwipe:
             self.IndexImage -= 1
             print(self.IndexImage)
-            self.bLeftSwipe = False
+            self.bRightSwipe = False
             if self.IndexImage < 0:
+                self.manager.transition.direction = 'right'
                 self.manager.current = 'CameraHUD'
                 self.IndexImage = 0
             else:
                 self.DisplayImage.source = GetImageAt(self.IndexImage)
-        elif self.bRightSwipe:
+        elif self.bLeftSwipe:
             self.IndexImage += 1
             print(self.IndexImage)
-            self.bRightSwipe = False
+            self.bLeftSwipe = False
             if self.IndexImage >= AmountImage():
+                self.manager.transition.direction = 'left'
                 self.manager.current = 'CameraHUD'
                 self.IndexImage = 0
             else:
