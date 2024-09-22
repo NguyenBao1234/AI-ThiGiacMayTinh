@@ -26,19 +26,21 @@ class AlbumHUD(Screen):
             self.bRightSwipe = True
 
     def on_touch_up(self, touch):
-        if self.bLeftSwipe == True:
+        if self.bLeftSwipe:
             self.IndexImage -= 1
             print(self.IndexImage)
             self.bLeftSwipe = False
             if self.IndexImage < 0:
                 self.manager.current = 'CameraHUD'
+                self.IndexImage = 0
             else:
-                self.DisplayImage = '../Asset/QuaBom.png'
-        elif self.bRightSwipe == True:
+                self.DisplayImage.source = GetImageAt(self.IndexImage)
+        elif self.bRightSwipe:
             self.IndexImage += 1
             print(self.IndexImage)
-            self.bLeftSwipe = False
-            if self.IndexImage == AmountImage():
+            self.bRightSwipe = False
+            if self.IndexImage >= AmountImage():
                 self.manager.current = 'CameraHUD'
+                self.IndexImage = 0
             else:
-                self.DisplayImage = GetImageAt(self.IndexImage)
+                self.DisplayImage.source = GetImageAt(self.IndexImage)
