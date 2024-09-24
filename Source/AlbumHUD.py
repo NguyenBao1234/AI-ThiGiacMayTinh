@@ -15,7 +15,7 @@ class AlbumHUD(Screen):
 
         self.name = 'AlbumHUD'
         self.AlbumLayout = FloatLayout()
-        self.DisplayImage = Image(source=GetImageAt(0), allow_stretch=True, keep_ratio=True)
+        self.DisplayImage = Image(allow_stretch=True, keep_ratio=True)
         self.AlbumLayout.add_widget(self.DisplayImage)
         self.add_widget(self.AlbumLayout)
         self.bLeftSwipe = False
@@ -40,6 +40,7 @@ class AlbumHUD(Screen):
         self.object_buttons = {}
 
     def on_enter(self, *args):
+        self.DisplayImage.source = GetImageAt(0)
         image = cv2.imread(self.DisplayImage.source)
         RefreshInforBtn(self, image)
 

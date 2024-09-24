@@ -99,9 +99,6 @@ class CameraHUD(Screen):
 
         if ret:
             timestr = time.strftime("%Y%m%d-%H%M%S")
-
-            #for classID, confidence, box in zip(*self.Dectect(frame)):
-            #    self.DrawBoundingBoxes(frame, classID, confidence, box)
             cv2.imwrite('../ImageCaptured/IMG-{}.jpg'.format(timestr), frame)
             self.AlbumBtn.background_normal = GetImageAt(0)
 
