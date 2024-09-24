@@ -22,6 +22,8 @@ def GetImageAt(index):
     if a > 0:
         if index < a :
             return GetImageArr()[a-1-index]
+    else:
+        return '../ImageCaptured/whitePic.png'
 
 def Dectect(self, frame):
     classIds, confs, bbox = self.net.detect(frame, confThreshold=0.5)

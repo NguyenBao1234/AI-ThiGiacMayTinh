@@ -10,7 +10,6 @@ from kivy.graphics.texture import Texture
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.screenmanager import Screen
 
-
 class CameraHUD(Screen):
 
     def __init__(self, **kwargs):
@@ -102,17 +101,14 @@ class CameraHUD(Screen):
             timestr = time.strftime("%Y%m%d-%H%M%S")
 
             #for classID, confidence, box in zip(*self.Dectect(frame)):
-             #   self.DrawBoundingBoxes(frame, classID, confidence, box)
+            #    self.DrawBoundingBoxes(frame, classID, confidence, box)
             cv2.imwrite('../ImageCaptured/IMG-{}.jpg'.format(timestr), frame)
             self.AlbumBtn.background_normal = GetImageAt(0)
-
-
 
     def DrawBoundingBoxes(self, frame, classId, confidence, box):
         cv2.rectangle(frame, box, (0, 155, 255), 2)
         cv2.putText(frame, str(round(confidence * 100, 2)) + '%', (box[0] + 10, box[1] + 40),
                     cv2.FONT_HERSHEY_DUPLEX, 1, (255, 255, 255), thickness=2)
-
 
     def OpenAlbum(self, instance):
         self.manager.transition.direction = 'left'
@@ -123,5 +119,6 @@ class CameraHUD(Screen):
         if self.CameraCaptureSource is not None:
             self.CameraCaptureSource = cv2.VideoCapture(0)
             print("enter CameraCaptureSource")
+
     def on_stop(self):
         self.CameraCaptureSource.release()
