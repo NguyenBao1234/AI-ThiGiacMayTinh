@@ -1,4 +1,5 @@
 import os
+import pyttsx3
 
 def GetImageArr():
     imgPathArr = []
@@ -28,5 +29,9 @@ def Dectect(self, frame):
     classIds, confs, bbox = self.net.detect(frame, confThreshold=0.5)
     return classIds, confs, bbox
 
-def PlayInforObject(self, ObjectName):
+def PlayInforObject(self, ObjectName, engine):
     print("infor", {ObjectName})
+    text = ObjectName
+    engine.say(text)
+    engine.runAndWait()
+    engine.stop()
