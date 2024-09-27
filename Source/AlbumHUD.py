@@ -1,4 +1,3 @@
-import pyttsx3
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.screenmanager import Screen
 from kivy.uix.image import Image
@@ -9,6 +8,7 @@ from FuncrionLibrary import AmountImage
 from FuncrionLibrary import PlayInforObject
 from kivy.graphics.texture import Texture
 import cv2
+
 
 class AlbumHUD(Screen):
     def __init__(self, **kwargs):
@@ -40,7 +40,6 @@ class AlbumHUD(Screen):
         # TMap : key = <tuple(box)>; value = <button>
         self.object_buttons = {}
 
-        self.engine = pyttsx3.init()
 
     def on_enter(self, *args):
         self.DisplayImage.source = GetImageAt(0)
@@ -99,7 +98,7 @@ def RefreshInforBtn(self,image):
             if tuple(box) not in self.object_buttons:
                 InforBtn = Button(text=self.classNames[classId - 1].upper(), size_hint=(None, None),
                                   size=(100, 50), pos=(int(box[0]), int(image.shape[0] - box[1] - 50)))
-                InforBtn.bind(on_press=partial(PlayInforObject, ObjectName=self.classNames[classId - 1],engine=self.engine))
+                InforBtn.bind(on_press=partial(PlayInforObject, ObjectName=self.classNames[classId - 1]))
                 self.object_buttons[tuple(box)] = InforBtn
                 self.AlbumLayout.add_widget(InforBtn)
 

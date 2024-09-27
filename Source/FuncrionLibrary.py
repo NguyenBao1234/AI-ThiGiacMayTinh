@@ -1,5 +1,6 @@
 import os
 import pyttsx3
+from concurrent.futures import ThreadPoolExecutor
 
 def GetImageArr():
     imgPathArr = []
@@ -24,14 +25,18 @@ def GetImageAt(index):
         if index < a :
             return GetImageArr()[a-1-index]
 
-
 def Dectect(self, frame):
     classIds, confs, bbox = self.net.detect(frame, confThreshold=0.5)
     return classIds, confs, bbox
 
-def PlayInforObject(self, ObjectName, engine):
-    print("infor", {ObjectName})
-    text = ObjectName
+
+def SpeakText(text):
+    print("Object is:{text}")
+    engine = pyttsx3.init()
     engine.say(text)
     engine.runAndWait()
-    engine.stop()
+    print("executed speak audio")
+def PlayInforObject(self,ObjectName):
+    executor = ThreadPoolExecutor(max_workers=2)
+    executor.submit(SpeakText,ObjectName)
+    print("thread called Speak infor object")
