@@ -31,7 +31,3 @@ def Dectect(self, frame):
 
 def PlayInforObject(self, ObjectName, engine):
     print("infor", {ObjectName})
-    text = ObjectName
-    engine.say(text)
-    engine.runAndWait()
-    engine.stop()

@@ -5,7 +5,7 @@ with open(fileName, 'rt') as f:
     className = f.readlines()
 
 for i in range(len(className)):
-    audioFilePath.append(f'../ClassNameAudio/className{i}.mp3')
+    audioFilePath.append(f'..Asset/ClassNameAudio/className{i}.mp3')
 
 def SpeechAudio(index):
     match index:
