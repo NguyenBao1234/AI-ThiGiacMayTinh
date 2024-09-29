@@ -2,8 +2,6 @@ import time
 from functools import partial
 
 import cv2
-import pyttsx3
-
 from FuncrionLibrary import *
 from kivy.uix.button import Button
 from kivy.uix.image import Image
@@ -56,8 +54,6 @@ class CameraHUD(Screen):
 
         Clock.schedule_interval(self.update, 1 / 30)
 
-        self.engine = pyttsx3.init()
-
         # Thêm các widget vào layout và HUD
         self.HUDLayout.add_widget(self.image)
         self.HUDLayout.add_widget(CaptureButton)
@@ -80,7 +76,8 @@ class CameraHUD(Screen):
                     if tuple(box) not in self.object_buttons:
                         InforBtn = Button(text=self.classNames[classId - 1].upper(), size_hint=(None, None),
                                           size=(100, 50), pos=(int(box[0]), int(frame.shape[0] - box[1] - 50)))
-                        InforBtn.bind(on_press=partial(PlayInforObject, ObjectName=self.classNames[classId - 1], engine=self.engine))
+                        #InforBtn.bind(on_press=partial(PlayInforObject, ObjectName=self.classNames[classId - 1]))
+                        InforBtn.bind(on_press=partial(PlayInforObject, indexOfObject=classId-1))
                         self.object_buttons[tuple(box)] = InforBtn
                         self.HUDLayout.add_widget(InforBtn)
                     else:
