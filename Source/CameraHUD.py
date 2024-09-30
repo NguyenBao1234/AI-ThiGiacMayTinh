@@ -9,7 +9,8 @@ from kivy.clock import Clock
 from kivy.graphics.texture import Texture
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.screenmanager import Screen
-
+from kivy.core.audio import SoundLoader
+from Audio import *
 class CameraHUD(Screen):
 
     def __init__(self, **kwargs):
@@ -51,7 +52,6 @@ class CameraHUD(Screen):
         self.net.setInputSwapRB(True)
         # TMap : key = <tuple(box)>; value = <button>
         self.object_buttons = {}
-
         Clock.schedule_interval(self.update, 1 / 30)
 
         # Thêm các widget vào layout và HUD
@@ -77,7 +77,7 @@ class CameraHUD(Screen):
                         InforBtn = Button(text=self.classNames[classId - 1].upper(), size_hint=(None, None),
                                           size=(100, 50), pos=(int(box[0]), int(frame.shape[0] - box[1] - 50)))
                         #InforBtn.bind(on_press=partial(PlayInforObject, ObjectName=self.classNames[classId - 1]))
-                        InforBtn.bind(on_press=partial(PlayInforObject, indexOfObject=classId-1))
+                        InforBtn.bind(on_press=partial(self.CamPlayInforObject, indexClassObject=classId-1))
                         self.object_buttons[tuple(box)] = InforBtn
                         self.HUDLayout.add_widget(InforBtn)
                     else:
@@ -108,6 +108,9 @@ class CameraHUD(Screen):
         cv2.putText(frame, str(round(confidence * 100, 2)) + '%', (box[0] + 10, box[1] + 40),
                     cv2.FONT_HERSHEY_DUPLEX, 1, (255, 255, 255), thickness=2)
 
+    def CamPlayInforObject(self, instance, indexClassObject):
+        self.PlayingSound = PlayInforObject(indexClassObject)
+
     def OpenAlbum(self, instance):
         self.manager.transition.direction = 'left'
         self.manager.current = 'AlbumHUD'
@@ -120,3 +123,4 @@ class CameraHUD(Screen):
 
     def on_stop(self):
         self.CameraCaptureSource.release()
+

@@ -31,12 +31,13 @@ def Dectect(self, frame):
     classIds, confs, bbox = self.net.detect(frame, confThreshold=0.5)
     return classIds, confs, bbox
 
-def PlayInforObject(self, ObjectName):
-    print("infor", {ObjectName})
 
-def PlayInforObject(self, indexOfObject):
-    pathAudio = GetPathAudio(indexOfObject)
+def PlayInforObject(indexClassObject):
+    pathAudio = GetPathAudio(indexClassObject)
     sound = SoundLoader.load(pathAudio)
-    if sound != None:
+    if sound :
+        print("played sound")
         sound.play()
-        sound.stop()
+        return sound
+    else:
+        print("no sound")

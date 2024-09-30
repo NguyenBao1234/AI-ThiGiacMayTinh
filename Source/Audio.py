@@ -1,13 +1,16 @@
+import os
+
 audioFilePath = []
 className = []
 fileName = '../ModelObjectDetection/coco.names'
+
 with open(fileName, 'rt') as f:
     className = f.readlines()
 
+"""Create All file path to audiofile"""
 for i in range(len(className)):
-    audioFilePath.append(f'..Asset/ClassNameAudio/className{i}.mp3')
-
-
+    path = os.path.join('..', 'Asset', 'ClassNameAudio', f'className{i}.mp3')
+    audioFilePath.append(path)
 def GetPathAudio(index):
     match index:
         case 0:
@@ -287,6 +290,3 @@ def GetPathAudio(index):
             print("Audio invalid!")
             return None
 
-for i in range(0, len(audioFilePath)):
-    GetPathAudio(i)
-    print('\n')
