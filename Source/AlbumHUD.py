@@ -96,7 +96,8 @@ def RefreshInforBtn(self,image):
             if tuple(box) not in self.object_buttons:
                 InforBtn = Button(text=self.classNames[classId - 1].upper(), size_hint=(None, None),
                                   size=(100, 50), pos=(int(box[0]), int(image.shape[0] - box[1] - 50)))
-                InforBtn.bind(on_press=partial(PlayInforObject, ObjectName=self.classNames[classId - 1]))
+                InforBtn.bind(on_press=partial(AlbumPlayInforObject, indexClassObject=classId - 1))
+
                 self.object_buttons[tuple(box)] = InforBtn
                 self.AlbumLayout.add_widget(InforBtn)
 
@@ -110,3 +111,5 @@ def RefreshInforBtn(self,image):
     image_texture.blit_buffer(buf, colorfmt='bgr', bufferfmt='ubyte')
     self.DisplayImage.texture = image_texture
 
+def AlbumPlayInforObject(self, indexClassObject):
+    PlayInforObject(indexClassObject)
