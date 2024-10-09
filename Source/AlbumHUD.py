@@ -12,12 +12,13 @@ import cv2
 class AlbumHUD(Screen):
     def __init__(self, **kwargs):
         super(AlbumHUD, self).__init__(**kwargs)
-
+        #Giao diện
         self.name = 'AlbumHUD'
         self.AlbumLayout = FloatLayout()
         self.DisplayImage = Image(allow_stretch=True, keep_ratio=True)
         self.AlbumLayout.add_widget(self.DisplayImage)
         self.add_widget(self.AlbumLayout)
+        #Biến cho điều khiển
         self.bLeftSwipe = False
         self.bRightSwipe = False
         self.bDownSwipe = False
@@ -38,12 +39,12 @@ class AlbumHUD(Screen):
 
         # TMap : key = <tuple(box)>; value = <button>
         self.object_buttons = {}
-
+    #Khi mở giao diện album HUD
     def on_enter(self, *args):
         self.DisplayImage.source = GetImageAt(0)
         image = cv2.imread(self.DisplayImage.source)
         RefreshInforBtn(self, image)
-
+    #xử lý điều khiển bằng chạm vào màn hình
     def on_touch_move(self, touch):
         if (touch.x - touch.ox) > 200:
             self.bRightSwipe = True
@@ -51,7 +52,7 @@ class AlbumHUD(Screen):
             self.bLeftSwipe = True
         elif (touch.y - touch.oy) <-200:
             self.bDownSwipe = True
-
+    #Chọn trường hợp tương tác dựa vào thao tác chạm vuôt màn hình
     def on_touch_up(self, touch):
         if self.bDownSwipe:
             self.manager.transition.direction = 'down'
@@ -83,13 +84,13 @@ class AlbumHUD(Screen):
                     self.DisplayImage.source = GetImageAt(self.IndexImage)
                     image = cv2.imread(self.DisplayImage.source)
                     RefreshInforBtn(self, image)
-
+#Hàm cập nhập nút bấm trên màn hình
 def RefreshInforBtn(self,image):
     current_objects = []
     classIds, confs, bbox = self.net.detect(image, confThreshold=0.5)
     if len(classIds) != 0:
         for classId, confidence, box in zip(classIds.flatten(), confs.flatten(), bbox):
-            cv2.rectangle(image, box, (0, 155, 255), 2)
+            cv2.rectangle(image, box, (255, 155,0 ), 2)
             current_objects.append(tuple(box))
 
             '''check to assign <infor button> to < the detected object>'''
@@ -110,6 +111,6 @@ def RefreshInforBtn(self,image):
     image_texture = Texture.create(size=(image.shape[1], image.shape[0]), colorfmt='bgr')
     image_texture.blit_buffer(buf, colorfmt='bgr', bufferfmt='ubyte')
     self.DisplayImage.texture = image_texture
-
+#Hàm gọi phát âm thanh về vật thể
 def AlbumPlayInforObject(self, indexClassObject):
     PlayInforObject(indexClassObject)
