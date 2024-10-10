@@ -20,3 +20,4 @@ while True:
         print("Press anykey to confirm...");break
 
 cv2.waitKey(0)
+#File code thử nghiệm 
