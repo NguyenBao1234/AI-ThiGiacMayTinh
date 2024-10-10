@@ -7,6 +7,8 @@ from kivy.app import App
 
 class MyApp(App):
     def build(self):
+        self.title = 'ObjectDetectionCamera'
+        self.icon = '../Asset/QuaBom.png'
         sm = ScreenManager()
         self.CameraPage = CameraHUD()
         self.AlbumPage = AlbumHUD()

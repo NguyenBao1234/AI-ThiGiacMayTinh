@@ -120,6 +120,10 @@ class CameraHUD(Screen):
             self.CameraCaptureSource.release()
 
     def on_enter(self):
+        latestImgPath = '../Asset/BlackPic.jpg'
+        if (GetImageAt(0)):
+            latestImgPath = GetImageAt(0)
+        self.AlbumBtn.background_normal = latestImgPath
         if self.CameraCaptureSource is not None:
             self.CameraCaptureSource = cv2.VideoCapture(0)
             print("enter CameraCaptureSource")
