@@ -8,7 +8,7 @@ from FuncrionLibrary import AmountImage
 from FuncrionLibrary import PlayInforObject
 from kivy.graphics.texture import Texture
 import cv2
-
+import os
 class AlbumHUD(Screen):
     def __init__(self, **kwargs):
         super(AlbumHUD, self).__init__(**kwargs)
@@ -16,7 +16,13 @@ class AlbumHUD(Screen):
         self.name = 'AlbumHUD'
         self.AlbumLayout = FloatLayout()
         self.DisplayImage = Image(allow_stretch=True, keep_ratio=True)
+        self.DeleteBtn = Button(size_hint=(0.1, 0.13),
+                            on_press=self.DeleteImage,
+                            background_normal='../Asset/DeleteIcon.png',
+                            background_down='../Asset/DeleteIcon_pressed.png',
+                            pos_hint={'center_x': 0.9, 'center_y': 0.95})
         self.AlbumLayout.add_widget(self.DisplayImage)
+        self.AlbumLayout.add_widget(self.DeleteBtn)
         self.add_widget(self.AlbumLayout)
         #Biến cho điều khiển
         self.bLeftSwipe = False
@@ -39,6 +45,8 @@ class AlbumHUD(Screen):
 
         # TMap : key = <tuple(box)>; value = <button>
         self.object_buttons = {}
+
+
     #Khi mở giao diện album HUD
     def on_enter(self, *args):
         self.DisplayImage.source = GetImageAt(0)
@@ -84,6 +92,29 @@ class AlbumHUD(Screen):
                     self.DisplayImage.source = GetImageAt(self.IndexImage)
                     image = cv2.imread(self.DisplayImage.source)
                     RefreshInforBtn(self, image)
+    def DeleteImage(self,ImagePath):
+        # Kiểm tra xem tệp có tồn tại không
+        ImagePath = GetImageAt(self.IndexImage)
+        if os.path.exists(ImagePath):
+            os.remove(ImagePath)
+            self.IndexImage -= 1
+            print(f"{ImagePath} đã bị xóa.")
+            #Mở ảnh khác của thư viện sau khi xóa, nếu thư viện còn ảnh
+            if(self.IndexImage<0):
+                if(AmountImage()>0):
+                    Source = GetImageAt(0)
+                    self.DisplayImage.source = Source
+                    image = cv2.imread(self.DisplayImage.source)
+                else:
+                    self.IndexImage = 0
+                    self.manager.transition.direction = 'right'
+                    self.manager.current = 'CameraHUD'
+            else:
+                self.DisplayImage.source = GetImageAt(self.IndexImage)
+                image = cv2.imread(self.DisplayImage.source)
+                RefreshInforBtn(self, image)
+
+
 #Hàm cập nhập nút bấm trên màn hình
 def RefreshInforBtn(self,image):
     current_objects = []
@@ -114,3 +145,4 @@ def RefreshInforBtn(self,image):
 #Hàm gọi phát âm thanh về vật thể
 def AlbumPlayInforObject(self, indexClassObject):
     PlayInforObject(indexClassObject)
+

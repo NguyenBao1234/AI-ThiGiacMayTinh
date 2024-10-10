@@ -31,7 +31,9 @@ class CameraHUD(Screen):
                             pos_hint={'center_x': 0.5, 'center_y': 0.1})
 
         # Tạo Button chuyển đổi giữa camera và thư viện
-        latestImgPath = GetImageAt(0)
+        latestImgPath = '../Asset/BlackPic.jpg'
+        if(GetImageAt(0)):
+            latestImgPath = GetImageAt(0)
         self.AlbumBtn =  Button(size_hint=(0.1, 0.1),
                            on_press=self.OpenAlbum,
                            background_normal=latestImgPath,
@@ -105,16 +107,17 @@ class CameraHUD(Screen):
 
     def DrawBoundingBoxes(self, frame, classId, confidence, box):
         cv2.rectangle(frame, box, (0, 155, 255), 2)
-        cv2.putText(frame, str(round(confidence * 100, 2)) + '%', (box[0] + 10, box[1] + 40),
-                    cv2.FONT_HERSHEY_DUPLEX, 1, (255, 255, 255), thickness=2)
+        #cv2.putText(frame, str(round(confidence * 100, 2)) + '%', (box[0] + 10, box[1] + 40),
+         #           cv2.FONT_HERSHEY_DUPLEX, 1, (255, 255, 255), thickness=2)
 
     def CamPlayInforObject(self, instance, indexClassObject):
         self.PlayingSound = PlayInforObject(indexClassObject)
 
     def OpenAlbum(self, instance):
-        self.manager.transition.direction = 'left'
-        self.manager.current = 'AlbumHUD'
-        self.CameraCaptureSource.release()
+        if(AmountImage()>0):
+            self.manager.transition.direction = 'left'
+            self.manager.current = 'AlbumHUD'
+            self.CameraCaptureSource.release()
 
     def on_enter(self):
         if self.CameraCaptureSource is not None:
