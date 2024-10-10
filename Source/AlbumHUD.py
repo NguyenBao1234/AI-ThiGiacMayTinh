@@ -102,9 +102,11 @@ class AlbumHUD(Screen):
             #Mở ảnh khác của thư viện sau khi xóa, nếu thư viện còn ảnh
             if(self.IndexImage<0):
                 if(AmountImage()>0):
+                    self.IndexImage = 0
                     Source = GetImageAt(0)
                     self.DisplayImage.source = Source
                     image = cv2.imread(self.DisplayImage.source)
+                    RefreshInforBtn(self, image)
                 else:
                     self.IndexImage = 0
                     self.manager.transition.direction = 'right'
@@ -113,6 +115,7 @@ class AlbumHUD(Screen):
                 self.DisplayImage.source = GetImageAt(self.IndexImage)
                 image = cv2.imread(self.DisplayImage.source)
                 RefreshInforBtn(self, image)
+
 
 
 #Hàm cập nhập nút bấm trên màn hình
