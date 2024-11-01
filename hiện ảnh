@@ -1,0 +1,84 @@
+import os
+import cv2
+import numpy as np
+from kivy.app import App
+from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.button import Button
+from kivy.uix.image import Image
+from kivy.graphics.texture import Texture
+
+class ImageViewer(BoxLayout):
+    def __init__(self, folder_path, **kwargs):
+        super(ImageViewer, self).__init__(**kwargs)
+
+        self.folder_path = folder_path
+        # Tạo mảng chứa tất cả đường dẫn hình ảnh
+        self.images = [os.path.join(folder_path, f) for f in os.listdir(folder_path) if f.endswith(('.png', '.jpg', '.jpeg'))]
+        self.current_index = 0
+
+        # Tạo widget hiển thị ảnh
+        self.image_widget = Image(size_hint=(1, 0.9))
+        self.add_widget(self.image_widget)
+
+        # Nút Quay lại
+        self.prev_button = Button(text='Previous', size_hint=(0.5, 0.1))
+        self.prev_button.bind(on_press=self.show_previous_image)
+        self.add_widget(self.prev_button)
+
+        # Nút Tiếp theo
+        self.next_button = Button(text='Next', size_hint=(0.5, 0.1))
+        self.next_button.bind(on_press=self.show_next_image)
+        self.add_widget(self.next_button)
+
+        # Hiển thị ảnh đầu tiên
+        self.update_image()
+
+    def update_image(self):
+        if self.images:
+            image_path = self.images[self.current_index]
+            image = cv2.imread(image_path)
+            if image is not None:
+                image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)  # Chuyển đổi từ BGR sang RGB
+                image = cv2.resize(image, (800, 600))  # Thay đổi kích thước ảnh
+
+                # Tạo một texture mới và gán vào image_widget
+                texture = Texture.create(size=(image.shape[1], image.shape[0]), colorfmt='rgb')
+                texture.blit_buffer(image.tobytes(), colorfmt='rgb', bufferfmt='ubyte')
+                texture.flip_vertical()
+                self.image_widget.texture = texture
+            else:
+                print(f"Could not load image: {image_path}")
+
+    def show_previous_image(self, instance):
+        self.current_index = (self.current_index - 1) % len(self.images)
+        self.update_image()
+
+    def show_next_image(self, instance):
+        self.current_index = (self.current_index + 1) % len(self.images)
+        self.update_image()
+
+class MyApp(App):
+    def build(self):
+        folder_path = 'D:/Nhận diện'  # Thay đổi đường dẫn tới thư mục chứa ảnh của bạn
+        return ImageViewer(folder_path)
+def update_image(self):
+    if not self.images:
+        print("No images found in the specified folder.")
+        return  # Trả về nếu không có hình ảnh
+
+    image_path = self.images[self.current_index]
+    image = cv2.imread(image_path)
+    if image is not None:
+        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)  # Chuyển đổi từ BGR sang RGB
+        image = cv2.resize(image, (800, 600))  # Thay đổi kích thước ảnh
+
+        # Tạo một texture mới và gán vào image_widget
+        texture = Texture.create(size=(image.shape[1], image.shape[0]), colorfmt='rgb')
+        texture.blit_buffer(image.tobytes(), colorfmt='rgb', bufferfmt='ubyte')
+        texture.flip_vertical()
+        self.image_widget.texture = texture
+    else:
+        print(f"Could not load image: {image_path}")
+
+if __name__ == '__main__':
+    MyApp().run()
